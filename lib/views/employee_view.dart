@@ -30,27 +30,32 @@ class _EmployeeViewState extends State<EmployeeView> {
   ];
 
   void saveEmployee() {
+    if (idController.text.isEmpty ||
+        nameController.text.isEmpty ||
+        userController.text.isEmpty ||
+        passController.text.isEmpty ||
+        selectedGender == null ||
+        selectedDept == null) {
+      return;
+    }
+
     setState(() {
+      final data = {
+        "id": idController.text,
+        "name": nameController.text,
+        "gender": selectedGender!,
+        "dept": selectedDept!,
+        "user": userController.text,
+        "pass": passController.text,
+      };
+
       if (editingIndex == null) {
-        employees.add({
-          "id": idController.text,
-          "name": nameController.text,
-          "gender": selectedGender ?? "",
-          "dept": selectedDept ?? "",
-          "user": userController.text,
-          "pass": passController.text,
-        });
+        employees.add(data);
       } else {
-        employees[editingIndex!] = {
-          "id": idController.text,
-          "name": nameController.text,
-          "gender": selectedGender ?? "",
-          "dept": selectedDept ?? "",
-          "user": userController.text,
-          "pass": passController.text,
-        };
+        employees[editingIndex!] = data;
         editingIndex = null;
       }
+
       clearFields();
     });
   }
@@ -78,7 +83,6 @@ class _EmployeeViewState extends State<EmployeeView> {
       nameController.text = employees[index]["name"]!;
       userController.text = employees[index]["user"]!;
       passController.text = employees[index]["pass"]!;
-
       selectedGender = employees[index]["gender"];
       selectedDept = employees[index]["dept"];
     });
@@ -105,10 +109,13 @@ class _EmployeeViewState extends State<EmployeeView> {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(15),
+
         child: Column(
           children: [
+
             buildField("Employee ID", idController),
             buildField("Full Name", nameController),
 
@@ -118,9 +125,7 @@ class _EmployeeViewState extends State<EmployeeView> {
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
               onChanged: (value) {
-                setState(() {
-                  selectedGender = value;
-                });
+                setState(() => selectedGender = value);
               },
               decoration: const InputDecoration(
                 labelText: "Gender",
@@ -136,9 +141,7 @@ class _EmployeeViewState extends State<EmployeeView> {
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
               onChanged: (value) {
-                setState(() {
-                  selectedDept = value;
-                });
+                setState(() => selectedDept = value);
               },
               decoration: const InputDecoration(
                 labelText: "Department",
@@ -181,8 +184,12 @@ class _EmployeeViewState extends State<EmployeeView> {
 
             const SizedBox(height: 10),
 
-            employees.isNotEmpty
-                ? ListView.builder(
+            employees.isEmpty
+                ? const Text(
+                    "No Employees Added",
+                    style: TextStyle(color: Colors.grey),
+                  )
+                : ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: employees.length,
@@ -194,10 +201,20 @@ class _EmployeeViewState extends State<EmployeeView> {
                           leading: CircleAvatar(
                             child: Text(emp["name"]![0].toUpperCase()),
                           ),
-                          title: Text(emp["name"] ?? ""),
-                          subtitle: Text(
-                            "ID: ${emp["id"]} | Dept: ${emp["dept"]}",
+
+                          title: Text(emp["name"]!),
+
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("ID: ${emp["id"]}"),
+                              Text("Gender: ${emp["gender"]}"),
+                              Text("Dept: ${emp["dept"]}"),
+                              Text("User: ${emp["user"]}"),
+                              Text("Pass: ${emp["pass"]}"),
+                            ],
                           ),
+
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -216,10 +233,6 @@ class _EmployeeViewState extends State<EmployeeView> {
                         ),
                       );
                     },
-                  )
-                : const Text(
-                    "No Employees Added",
-                    style: TextStyle(color: Colors.grey),
                   ),
           ],
         ),
