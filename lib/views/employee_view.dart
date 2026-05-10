@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'output_view.dart';
 
 class EmployeeView extends StatefulWidget {
   const EmployeeView({super.key});
@@ -120,7 +121,7 @@ class _EmployeeViewState extends State<EmployeeView> {
             buildField("Full Name", nameController),
 
             DropdownButtonFormField(
-              value: selectedGender,
+              initialValue: selectedGender,
               items: genders
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
@@ -136,7 +137,7 @@ class _EmployeeViewState extends State<EmployeeView> {
             const SizedBox(height: 10),
 
             DropdownButtonFormField(
-              value: selectedDept,
+              initialValue: selectedDept,
               items: departments
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
@@ -175,6 +176,24 @@ class _EmployeeViewState extends State<EmployeeView> {
               ),
             ),
 
+            const SizedBox(height: 10),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          OutputView(employees: employees),
+                    ),
+                  );
+                },
+                child: const Text("View Output Screen"),
+              ),
+            ),
+
             const SizedBox(height: 20),
 
             const Text(
@@ -185,10 +204,8 @@ class _EmployeeViewState extends State<EmployeeView> {
             const SizedBox(height: 10),
 
             employees.isEmpty
-                ? const Text(
-                    "No Employees Added",
-                    style: TextStyle(color: Colors.grey),
-                  )
+                ? const Text("No Employees Added",
+                    style: TextStyle(color: Colors.grey))
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -211,7 +228,6 @@ class _EmployeeViewState extends State<EmployeeView> {
                               Text("Gender: ${emp["gender"]}"),
                               Text("Dept: ${emp["dept"]}"),
                               Text("User: ${emp["user"]}"),
-                              Text("Pass: ${emp["pass"]}"),
                             ],
                           ),
 
